@@ -3,6 +3,7 @@ from board import Board
 from robot import Robot, NormalRobot
 import command
 from util import Dir, RelDir, Rot
+from sprites import SpriteSheet
 
 class Game:
     FONTSIZE = 30
@@ -26,14 +27,19 @@ class Game:
         self.run()
 
     def get_rect(self, x, y):
+        x_pix, y_pix = self.get_coords(x, y)
+        return (x_pix, y_pix, self.dx, self.dy)
+
+    def get_coords(self, x, y):
         x_pix = x * self.dx
         y_pix = y * self.dy
-        return (x_pix, y_pix, self.dx, self.dy)
+        return (x_pix, y_pix)
 
     def draw(self):
         self.window.fill((255,255,255))
         for robot in self.board.robots:
-            pygame.draw.rect(self.window, (0,0,0), self.get_rect(robot.x, robot.y))
+            #pygame.draw.rect(self.window, (0,0,0), self.get_rect(robot.x, robot.y))
+            self.window.blit(pygame.transform.rotate(robot.image, (-robot.dir).angle()), self.get_coords(robot.x, robot.y))
 
         y = 0
         for i, command in enumerate(self.commands):

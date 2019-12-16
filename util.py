@@ -6,6 +6,26 @@ class Dir(Enum):
     E = 'E'
     W = 'W'
 
+    def angle(self):
+        if self == Dir.N:
+            return 0
+        if self == Dir.S:
+            return 180
+        if self == Dir.E:
+            return 270
+        if self == Dir.W:
+            return 90
+
+    def __neg__(self):
+        if self == Dir.N:
+            return Dir.S
+        if self == Dir.S:
+            return Dir.N
+        if self == Dir.W:
+            return Dir.E
+        if self == Dir.E:
+            return Dir.W
+
     def __str__(self):
         return str(self.value)
 
@@ -13,7 +33,7 @@ class Dir(Enum):
         if other == RelDir.F:
             return self
         if other == RelDir.R:
-            return self.r()
+            return -self
         if other == Rot.CW:
             return self.cw()
         if other == Rot.CCW:
@@ -41,16 +61,6 @@ class Dir(Enum):
             return Dir.S
         if self == Dir.E:
             return Dir.N
-
-    def r(self):
-        if self == Dir.N:
-            return Dir.S
-        if self == Dir.S:
-            return Dir.N
-        if self == Dir.W:
-            return Dir.E
-        if self == Dir.E:
-            return Dir.W
 
 
 class Rot(Enum):

@@ -1,8 +1,9 @@
 import command
 from util import Dir, RelDir, Rot
+import pygame
 
 class Robot:
-    def __init__(self, x, y, dir=Dir.N):
+    def __init__(self, x, y, dir=-Dir.N):
         self.x = x
         self.y = y
         self.dir = dir
@@ -24,6 +25,7 @@ class Robot:
 class NormalRobot(Robot):
     def __init__(self, x, y):
         Robot.__init__(self, x, y)
+        self.image = pygame.transform.scale(pygame.image.load("assets/robot.png").convert_alpha(), (60, 60))
 
     def run_command(self, com):
 
