@@ -2,11 +2,11 @@ import pygame
 from board import Board
 from robot import Robot, NormalRobot
 import command
-from util import Dir
+from util import Dir, RelDir, Rot
 
 class Game:
     FONTSIZE = 30
-    def __init__(self, w=800, h=600, nw=10, nh=10): # window width and height, width and height in number of tiles
+    def __init__(self, w=900, h=600, nw=10, nh=10): # window width and height, width and height in number of tiles
         self.window = pygame.display.set_mode((w,h))
         self.clock = pygame.time.Clock()
         self.stopped = False
@@ -61,13 +61,24 @@ class Game:
                         self.stopped = True
 
                     if event.key == pygame.K_UP:
-                        self.commands.append(command.Move(Dir.U))
+                        self.commands.append(command.Move(Dir.N))
                     if event.key == pygame.K_DOWN:
-                        self.commands.append(command.Move(Dir.D))
+                        self.commands.append(command.Move(Dir.S))
                     if event.key == pygame.K_RIGHT:
-                        self.commands.append(command.Move(Dir.R))
+                        self.commands.append(command.Move(Dir.E))
                     if event.key == pygame.K_LEFT:
-                        self.commands.append(command.Move(Dir.L))
+                        self.commands.append(command.Move(Dir.W))
+
+                        
+                    if event.key == pygame.K_w:
+                        self.commands.append(command.RelMove(RelDir.F))
+                    if event.key == pygame.K_s:
+                        self.commands.append(command.RelMove(RelDir.R))
+                    if event.key == pygame.K_a:
+                        self.commands.append(command.Rot(Rot.CCW))
+                    if event.key == pygame.K_d:
+                        self.commands.append(command.Rot(Rot.CW))
+
 
                     if event.key == pygame.K_SPACE:
                         if self.command_index < len(self.commands):
