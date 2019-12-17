@@ -33,7 +33,7 @@ class Robot:
         self.cardinal_move(self.dir * dir)
 
     def rotate(self, dir):
-        self.dir *= com.dir
+        self.dir *= dir
 
 
 class NormalRobot(Robot):

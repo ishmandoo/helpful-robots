@@ -81,6 +81,12 @@ class Rot(Enum):
 class RelDir(Enum):
     F = 'F'
     R = 'R'
+
+    def __neg__(self):
+        if self == RelDir.R:
+            return RelDir.F
+        if self == RelDir.F:
+            return RelDir.R
     
     def __str__(self):
         return str(self.value)
