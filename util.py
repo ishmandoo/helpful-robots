@@ -38,6 +38,8 @@ class Dir(Enum):
             return self.cw()
         if other == Rot.CCW:
             return self.ccw()
+        if other == Rot.I:
+            return self
     
     def __rmul__(self, other):
         return self.__mul__(other)
@@ -66,6 +68,12 @@ class Dir(Enum):
 class Rot(Enum):
     CW = 'CW'
     CCW = 'CCW'
+
+    def __neg__(self):
+        if self == Rot.CW:
+            return Rot.CCW
+        if self == Rot.CCW:
+            return Rot.CW
 
     def __str__(self):
         return str(self.value)

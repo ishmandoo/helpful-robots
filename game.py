@@ -1,9 +1,9 @@
 import pygame
 from board import Board
-from robot import Robot, NormalRobot
+from robot import Robot, NormalRobot, ReverseRobot
 import command
 from util import Dir, RelDir, Rot
-from sprites import SpriteSheet
+from objects import Wall, Goal, Bomb
 
 class Game:
     FONTSIZE = 30
@@ -13,7 +13,12 @@ class Game:
         self.stopped = False
 
         self.board = Board(nw, nh)
-        self.board.add_robot(NormalRobot(1, 1))
+        self.board.add_robot(NormalRobot(1, 1, Dir.S))
+        self.board.add_robot(ReverseRobot(3, 2, Dir.W))
+
+        self.board.add_object(Wall(3,3))
+        self.board.add_object(Goal(5,3))
+        self.board.add_object(Bomb(4,4))
 
         self.dx = h//nw
         self.dy = h//nh
@@ -23,8 +28,6 @@ class Game:
         
         self.commands = []
         self.command_index = 0
-
-        self.run()
 
     def get_rect(self, x, y):
         x_pix, y_pix = self.get_coords(x, y)
@@ -38,8 +41,13 @@ class Game:
     def draw(self):
         self.window.fill((255,255,255))
         for robot in self.board.robots:
-            #pygame.draw.rect(self.window, (0,0,0), self.get_rect(robot.x, robot.y))
-            self.window.blit(pygame.transform.rotate(robot.image, (-robot.dir).angle()), self.get_coords(robot.x, robot.y))
+            if robot.alive:
+                #pygame.draw.rect(self.window, (0,0,0), self.get_rect(robot.x, robot.y))
+                self.window.blit(pygame.transform.rotate(robot.image, (-robot.dir).angle()), self.get_coords(robot.x, robot.y))
+
+        for obj in self.board.objects.values():
+            if obj.alive:
+                self.window.blit(obj.image, self.get_coords(obj.x, obj.y))
 
         y = 0
         for i, command in enumerate(self.commands):
@@ -99,4 +107,5 @@ class Game:
 
 if __name__ == '__main__':
     g = Game()
+    g.run()
     
