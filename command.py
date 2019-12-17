@@ -4,6 +4,13 @@ class Command:
     def __init__(self):
         pass
 
+class Action(Command):
+    def __init__(self):
+        pass
+
+    def __repr__(self):
+        return "action"
+
 class Move(Command):
     def __init__(self, dir):
         self.dir = dir

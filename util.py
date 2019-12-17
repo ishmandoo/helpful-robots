@@ -16,6 +16,20 @@ class Dir(Enum):
         if self == Dir.W:
             return 90
 
+    def __add__(self, other):
+        x, y = other
+        if self == Dir.N:
+            return (x, y-1)
+        if self == Dir.S:
+            return (x, y+1)
+        if self == Dir.W:
+            return (x-1, y)
+        if self == Dir.E:
+            return (x+1, y)
+
+    def __radd__(self, other):
+        return self.__add__(other)
+
     def __neg__(self):
         if self == Dir.N:
             return Dir.S
@@ -38,8 +52,6 @@ class Dir(Enum):
             return self.cw()
         if other == Rot.CCW:
             return self.ccw()
-        if other == Rot.I:
-            return self
     
     def __rmul__(self, other):
         return self.__mul__(other)

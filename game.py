@@ -1,6 +1,6 @@
 import pygame
 from board import Board
-from robot import Robot, NormalRobot, ReverseRobot
+from robot import Robot, NormalRobot
 import command
 from util import Dir, RelDir, Rot
 from objects import Wall, Goal, Bomb
@@ -14,7 +14,7 @@ class Game:
 
         self.board = Board(nw, nh)
         self.board.add_robot(NormalRobot(1, 1, Dir.S))
-        self.board.add_robot(ReverseRobot(3, 2, Dir.W))
+        self.board.add_robot(NormalRobot(3, 2, Dir.W))
 
         self.board.add_object(Wall(3,3))
         self.board.add_object(Goal(5,3))

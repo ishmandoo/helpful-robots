@@ -5,6 +5,7 @@ class Obj:
         self.x = x
         self.y = y
         self.alive = True
+        self.holdable = False
     
     def die(self):
         self.alive = False
@@ -23,3 +24,9 @@ class Bomb(Obj):
     def __init__(self, x, y):
         Obj.__init__(self, x, y)
         self.image = pygame.transform.scale(pygame.image.load("assets/bomb.jpg").convert_alpha(), (60, 60))
+
+class Box(Obj):
+    def __init__(self, x, y):
+        Obj.__init__(self, x, y)
+        self.image = pygame.transform.scale(pygame.image.load("assets/bomb.jpg").convert_alpha(), (60, 60))
+        self.holdable = False
