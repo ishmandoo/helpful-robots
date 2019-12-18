@@ -1,51 +1,127 @@
-import command
-from util import Dir, RelDir, Rot
+#import command
+from util import Dir, RelDir, Rot, Command
 import pygame
 
 class Robot:
-    def __init__(self, x, y, dir):
-        self.x = x
-        self.y = y
+    def __init__(self, pos, dir):
+        print("init Robot")
+        self.pos = pos
         self.dir = dir
-        self.last_state = None # x, y, dir
+        self.level = None
+        self.last_state = None # pos, dir
         self.alive = True
         self.holder = False
-        self.held = None
+        self.held_obj = None
     
     def die(self):
         self.alive = False
 
-    def reset_to_last(self):
-        self.x, self.y, self.dir = self.last_state
+    def front_pos(self):
+        return self.pos + self.dir
 
-    def run_command(self, com):
-        self.last_state = self.x, self.y, self.dir
+    def reset_to_last(self):
+        self.pos, self.dir = self.last_state
+
+    def run_command(self, com, level):
+        self.last_state = self.pos, self.dir
+        
+        if self.held_obj:
+            self.held_obj.move(self.front_pos())
+
+        if com == Command.A:
+            print("action")
+            obj_front = self.level.object_at(self.front_pos())
+            if obj_front:
+                obj_front.action()
 
     def cardinal_move(self, dir):
-        self.x, self.y = (self.x, self.y) + dir
+        new_pos = self.pos + dir
+        if not self.level.is_blocked(new_pos):
+            if self.held_obj:
+                if not self.level.is_blocked(new_pos + dir):
+                    self.pos = new_pos
+            else:
+                self.pos = new_pos
 
     def relative_move(self, dir):
         self.cardinal_move(self.dir * dir)
 
     def rotate(self, dir):
-        self.dir *= dir
+        new_dir = self.dir * dir
+        if self.held_obj:
+            if not self.level.is_blocked(self.pos + new_dir):
+                self.dir = new_dir
+        else:
+            self.dir = new_dir
 
-
-class NormalRobot(Robot):
-    def __init__(self, x, y, dir):
-        Robot.__init__(self, x, y, dir)
+class HoldingRobot(Robot):
+    def __init__(self, pos, dir):
+        print("init Robot")
+        super().__init__(pos, dir)
         self.image = pygame.transform.scale(pygame.image.load("assets/robot.png").convert_alpha(), (60, 60))
         self.holder = True
 
-    def run_command(self, com):
-        Robot.run_command(self, com) # call the parent class run_command
-        if isinstance(com, command.Move): # if this is a cardinal direction move (N,S,E,W)
-            self.cardinal_move(com.dir) # move in the direction of the command
-            self.dir = com.dir # rotate the robot to face this direction
+    def run_command(self, com, level):
+        if com == Command.A:
+            print("action")
+            if self.held_obj:
+                self.held_obj = None
+                print("obj put down")
+            else:
+                obj_front = self.level.object_at(self.front_pos())
+                print(obj_front)
+                if obj_front:
+                    if obj_front.holdable:
+                        self.held_obj = obj_front
+                        print("obj picked up")
+        
+        super().run_command(com, level) # call the parent class run_command
 
-        if isinstance(com, command.RelMove): # if it is a relative move (F,R)
-            self.relative_move(com.dir)
+class NormalRobot(Robot):
+    def __init__(self, pos, dir):
+        print("init NormalRobot")
+        super().__init__(pos, dir)
+        self.image = pygame.transform.scale(pygame.image.load("assets/robot.png").convert_alpha(), (60, 60))
 
-        if isinstance(com, command.Rot): # if this is a rotation
-            self.rotate(com.dir)
+    def run_command(self, com, level):
+
+        new_dir = None
+        if com == Command.U:
+            new_dir = Dir.N
+        if com == Command.D:
+            new_dir = Dir.S
+        if com == Command.L:
+            new_dir = Dir.W
+        if com == Command.R:
+            new_dir = Dir.E
+
+        if new_dir:
+            self.cardinal_move(new_dir)
+            self.dir = new_dir
+        
+        super().run_command(com, level) # call the parent class run_command
+
+class TestRobot(NormalRobot, HoldingRobot):
+    def __init__(self, pos, dir):
+        print("init TestRobot")
+        super().__init__(pos, dir)
+
+class RelativeRobot(Robot):
+    def __init__(self, pos, dir):
+        print("init RelativeRobot")
+        super().__init__(pos, dir)
+        self.image = pygame.transform.scale(pygame.image.load("assets/robot.png").convert_alpha(), (60, 60))
+        self.holder = True
+
+    def run_command(self, com, level):
+        super().run_command(com, level) # call the parent class run_command
+
+        if com == Command.U:
+            self.relative_move(RelDir.F)
+        if com == Command.D:
+            self.relative_move(RelDir.R)
+        if com == Command.L:
+            self.rotate(Rot.CCW)
+        if com == Command.R:
+            self.rotate(Rot.CW)
 

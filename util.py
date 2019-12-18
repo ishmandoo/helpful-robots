@@ -1,10 +1,25 @@
 from enum import Enum
 
+
+class Command(Enum):
+    U = 'Up'
+    D = 'Down'
+    L = 'Left'
+    R = 'Right'
+    A = 'Action'
+    
+    def __str__(self):
+        return str(self.value)
+
 class Dir(Enum):
-    N = 'N'
-    S = 'S'
-    E = 'E'
-    W = 'W'
+    N = 'North'
+    S = 'South'
+    E = 'East'
+    W = 'West'
+    NW = 'Northwest'
+    NE = 'Northeast'
+    SW = 'Southwest'
+    SE = 'Southeast'
 
     def angle(self):
         if self == Dir.N:
@@ -16,6 +31,7 @@ class Dir(Enum):
         if self == Dir.W:
             return 90
 
+
     def __add__(self, other):
         x, y = other
         if self == Dir.N:
@@ -26,6 +42,14 @@ class Dir(Enum):
             return (x-1, y)
         if self == Dir.E:
             return (x+1, y)
+        if self == Dir.NW:
+            return (x-1, y-1)
+        if self == Dir.NE:
+            return (x+1, y-1)
+        if self == Dir.SW:
+            return (x-1, y+1)
+        if self == Dir.SE:
+            return (x+1, y+1)
 
     def __radd__(self, other):
         return self.__add__(other)

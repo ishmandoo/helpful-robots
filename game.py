@@ -1,70 +1,46 @@
 import pygame
-from board import Board
-from robot import Robot, NormalRobot
-import command
-from util import Dir, RelDir, Rot
-from objects import Wall, Goal, Bomb
+pygame.font.init()
+import time
+
+from renderer import Renderer
+from level import Level
+from robot import Robot, NormalRobot, RelativeRobot, TestRobot
+#import command
+from util import Dir, RelDir, Rot, Command
+from objects import Wall, Goal, Bomb, Box, Switch, CondWall
+from levels import test_level, level_1
 
 class Game:
-    FONTSIZE = 30
-    def __init__(self, w=900, h=600, nw=10, nh=10): # window width and height, width and height in number of tiles
+    def __init__(self, w=900, h=600): # window width and height, width and height in number of tiles
         self.window = pygame.display.set_mode((w,h))
         self.clock = pygame.time.Clock()
         self.stopped = False
-
-        self.board = Board(nw, nh)
-        self.board.add_robot(NormalRobot(1, 1, Dir.S))
-        self.board.add_robot(NormalRobot(3, 2, Dir.W))
-
-        self.board.add_object(Wall(3,3))
-        self.board.add_object(Goal(5,3))
-        self.board.add_object(Bomb(4,4))
-
-        self.dx = h//nw
-        self.dy = h//nh
-
-        pygame.font.init()
-        self.font = pygame.font.SysFont('Comic Sans MS', Game.FONTSIZE)
+        self.levels = [
+            level_1,
+            test_level
+            ]
         
+        self.current_level = None
+        self.current_level_builder = None
+
+        for level in self.levels:
+            self.current_level_builder = level
+            self.start_level(level)
+    
+    def start_level(self, level, title=True):
         self.commands = []
         self.command_index = 0
 
-    def get_rect(self, x, y):
-        x_pix, y_pix = self.get_coords(x, y)
-        return (x_pix, y_pix, self.dx, self.dy)
-
-    def get_coords(self, x, y):
-        x_pix = x * self.dx
-        y_pix = y * self.dy
-        return (x_pix, y_pix)
-
-    def draw(self):
-        self.window.fill((255,255,255))
-        for robot in self.board.robots:
-            if robot.alive:
-                #pygame.draw.rect(self.window, (0,0,0), self.get_rect(robot.x, robot.y))
-                self.window.blit(pygame.transform.rotate(robot.image, (-robot.dir).angle()), self.get_coords(robot.x, robot.y))
-
-        for obj in self.board.objects.values():
-            if obj.alive:
-                self.window.blit(obj.image, self.get_coords(obj.x, obj.y))
-
-        y = 0
-        for i, command in enumerate(self.commands):
-            text = str(command)
-            text_surface = self.font.render(text, True, (0, 0, 0))
-            self.window.blit(text_surface, dest=(620,y))
-
-            if i == self.command_index:
-                marker = ">"
-                text_surface = self.font.render(marker, True, (0, 0, 0))
-                self.window.blit(text_surface, dest=(600,y))
-
-            y += Game.FONTSIZE
+        self.current_level = level.build()
+        self.renderer = Renderer(self.current_level, self.window)
+        
+        if title:
+            self.renderer.show_title()
+        self.run()
 
     def run(self):
         while self.stopped == False:
-            self.draw()
+            self.renderer.draw(self.commands, self.command_index)
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -72,40 +48,49 @@ class Game:
                     quit()
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
-                        self.stopped = True
+                        pygame.quit()
+                        quit()
 
                     if event.key == pygame.K_UP:
-                        self.commands.append(command.Move(Dir.N))
+                        self.commands.append(Command.U)
                     if event.key == pygame.K_DOWN:
-                        self.commands.append(command.Move(Dir.S))
-                    if event.key == pygame.K_RIGHT:
-                        self.commands.append(command.Move(Dir.E))
+                        self.commands.append(Command.D)
                     if event.key == pygame.K_LEFT:
-                        self.commands.append(command.Move(Dir.W))
-
+                        self.commands.append(Command.L)
+                    if event.key == pygame.K_RIGHT:
+                        self.commands.append(Command.R)
+                    if event.key == pygame.K_RETURN:
+                        self.commands.append(Command.A)
                         
                     if event.key == pygame.K_w:
-                        self.commands.append(command.RelMove(RelDir.F))
+                        self.current_level.run_command(Command.U)
                     if event.key == pygame.K_s:
-                        self.commands.append(command.RelMove(RelDir.R))
+                        self.current_level.run_command(Command.D)
                     if event.key == pygame.K_a:
-                        self.commands.append(command.Rot(Rot.CCW))
+                        self.current_level.run_command(Command.L)
                     if event.key == pygame.K_d:
-                        self.commands.append(command.Rot(Rot.CW))
+                        self.current_level.run_command(Command.R)
+                    if event.key == pygame.K_e:
+                        self.current_level.run_command(Command.A)
+
+                    if event.key == pygame.K_BACKSPACE:
+                        self.commands = self.commands[:-1]
 
 
                     if event.key == pygame.K_SPACE:
-                        if self.command_index < len(self.commands):
-                            self.board.run_command(self.commands[self.command_index])
-                            self.command_index += 1
-                        else:
-                            self.stopped = True
+                        for i, command in enumerate(self.commands):
+                            self.current_level.run_command(command)
+                            self.renderer.draw(self.commands, i)
+
+                            pygame.time.delay(200)
+                        self.start_level(self.current_level_builder, title=False)
                     
+            if self.current_level.complete:
+                return
 
             pygame.display.update()
             self.clock.tick(60)
 
 if __name__ == '__main__':
     g = Game()
-    g.run()
     
