@@ -11,7 +11,11 @@ class Obj:
         self.var_name = None
         self.image = None
         self.goal = False
+
     
+    def front_pos(self):
+        return self.pos + self.dir
+
     def die(self):
         self.alive = False
 
@@ -107,3 +111,5 @@ class Switch(Obj):
                 return self.image_off
         else:
             raise ValueError('variable not found')
+
+

@@ -1,23 +1,15 @@
 #import command
 from util import Dir, RelDir, Rot, Command
 import pygame
+from objects import Obj
 
-class Robot:
+class Robot(Obj):
     def __init__(self, pos, dir):
         print("init Robot")
-        self.pos = pos
+        super().__init__(pos)
         self.dir = dir
-        self.level = None
-        self.last_state = None # pos, dir
-        self.alive = True
         self.holder = False
         self.held_obj = None
-    
-    def die(self):
-        self.alive = False
-
-    def front_pos(self):
-        return self.pos + self.dir
 
     def reset_to_last(self):
         self.pos, self.dir = self.last_state
@@ -33,7 +25,7 @@ class Robot:
             obj_front = self.level.object_at(self.front_pos())
             if obj_front:
                 obj_front.action()
-
+    
     def cardinal_move(self, dir):
         new_pos = self.pos + dir
         if not self.level.is_blocked(new_pos):
