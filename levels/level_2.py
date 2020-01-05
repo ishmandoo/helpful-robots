@@ -8,6 +8,7 @@ def build():
 
         #level.add_robot(NormalRobot((1, 1), Dir.S))
         level.add_robot(TestRobot((3, 2), Dir.W))
+        level.add_robot(TestRobot((4, 2), Dir.W))
 
         level.add_object(Wall((0,2)))
 

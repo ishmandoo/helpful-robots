@@ -8,7 +8,7 @@ from robot import Robot, NormalRobot, RelativeRobot, TestRobot
 #import command
 from util import Dir, RelDir, Rot, Command
 from objects import Wall, Goal, Bomb, Box, Switch, CondWall
-from levels import test_level, level_1
+from levels import test_level, level_1, level_2
 
 class Game:
     def __init__(self, w=900, h=600): # window width and height, width and height in number of tiles
@@ -17,6 +17,7 @@ class Game:
         self.stopped = False
         self.levels = [
             level_1,
+            level_2,
             test_level
             ]
         
@@ -83,7 +84,8 @@ class Game:
                             self.renderer.draw(self.commands, i)
 
                             pygame.time.delay(200)
-                        self.start_level(self.current_level_builder, title=False)
+                        if not self.current_level.complete:
+                            self.start_level(self.current_level_builder, title=False)
                     
             if self.current_level.complete:
                 return

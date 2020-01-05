@@ -31,6 +31,7 @@ class Obj:
         if self.goal:
             self.level.win()
 
+
 class Wall(Obj):
     def __init__(self, pos):
         Obj.__init__(self, pos)

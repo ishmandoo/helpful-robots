@@ -43,6 +43,12 @@ class Robot:
             else:
                 self.pos = new_pos
 
+        obj_front = self.level.object_at(self.front_pos())
+        if obj_front:
+            pass
+            # TODO: pushing objects
+            #obj_front.cardinal_move(dir)
+
     def relative_move(self, dir):
         self.cardinal_move(self.dir * dir)
 

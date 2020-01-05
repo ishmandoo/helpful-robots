@@ -33,6 +33,12 @@ class Level:
             return obj.is_blocking()
         return False
 
+    def is_pushable(self, pos):
+        if pos in self.objects:
+            obj = self.objects[pos]
+            return obj.pushable
+        return False
+
     def object_at(self, pos):
         if pos in self.objects:
             print("no obj")
