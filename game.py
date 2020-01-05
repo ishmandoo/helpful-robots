@@ -5,7 +5,6 @@ import time
 from renderer import Renderer
 from level import Level
 from robot import Robot, NormalRobot, RelativeRobot, TestRobot
-#import command
 from util import Dir, RelDir, Rot, Command
 from objects import Wall, Goal, Bomb, Box, Switch, CondWall
 from levels import test_level, level_1, level_2
@@ -60,7 +59,7 @@ class Game:
                         self.commands.append(Command.L)
                     if event.key == pygame.K_RIGHT:
                         self.commands.append(Command.R)
-                    if event.key == pygame.K_RETURN:
+                    if event.key == pygame.K_SPACE:
                         self.commands.append(Command.A)
                         
                     if event.key == pygame.K_w:
@@ -78,7 +77,7 @@ class Game:
                         self.commands = self.commands[:-1]
 
 
-                    if event.key == pygame.K_SPACE:
+                    if event.key == pygame.K_RETURN:
                         for i, command in enumerate(self.commands):
                             self.current_level.run_command(command)
                             self.renderer.draw(self.commands, i)
