@@ -12,10 +12,6 @@ class Obj:
         self.image = None
         self.goal = False
 
-    
-    def front_pos(self):
-        return self.pos + self.dir
-
     def die(self):
         self.alive = False
 

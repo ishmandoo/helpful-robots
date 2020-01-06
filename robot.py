@@ -13,6 +13,9 @@ class Robot(Obj):
 
     def reset_to_last(self):
         self.pos, self.dir = self.last_state
+    
+    def front_pos(self):
+        return self.pos + self.dir
 
     def run_command(self, com, level):
         self.last_state = self.pos, self.dir
